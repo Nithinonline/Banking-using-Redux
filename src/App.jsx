@@ -1,17 +1,34 @@
-import CreateCustomer from "./Components/CreateCustomer";
-import Customer from "./Components/Customer";
-import AccountOperations from "./Components/AccountOperations";
-import BalanceDisplay from "./Components/BalanceDisplay";
+
+
+import AccountOperations from "./components/Features/Account/AccountOperations";
+import BalanceDisplay from "./components/Features/Account/BalanceDisplay";
 import './App.css'
+import Customer from "./components/Features/Customers/Customer";
+import CreateCustomer from "./components/Features/Customers/CreateCustomer";
+import { useSelector } from "react-redux";
+
+
+
 
 function App() {
+  const fullname = useSelector((state) => state.Customer.fullName)
+
   return (
     <div>
       <h1>🏦 Welcome to NITHI Bank ⚛️</h1>
-      <CreateCustomer />
-      <Customer />
+      {fullname === "" ? (
+        <CreateCustomer />
+      ) : (
+        <>
+      <Customer/>
       <AccountOperations />
       <BalanceDisplay />
+      </>
+      )
+
+      }
+
+
     </div>
   );
 }

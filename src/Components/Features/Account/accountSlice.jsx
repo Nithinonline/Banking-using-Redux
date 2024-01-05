@@ -1,22 +1,26 @@
 const initialStateAccount = {
-    balance: 0,
+    balance: "",
     loan: 0,
     loanPurpose: "",
+    isLoading: false,
 };
 
 export function accountReducer(state = initialStateAccount, action) {
     switch (action.type) {
         case 'account/deposit':
-            return { ...state, balance: state.balance + action.payload };
+            return { ...state, balance: state.balance + action.payload,
+            isLoading:false
+         };
         case 'account/withdraw':
             return { ...state, balance: state.balance - action.payload }
         case 'account/requestLoan':
             if (state.loan > 0) return state;
-            return { ...state, 
+            return {
+                ...state,
                 loan: action.payload.amount,
                 loanPurpose: action.payload.purpose,
                 balance: state.balance + action.payload.amount,
-             }
+            }
         case 'account/payloan':
             return {
                 ...state,
@@ -24,23 +28,41 @@ export function accountReducer(state = initialStateAccount, action) {
                 loanPurpose: "",
                 balance: state.balance - state.loan
             }
+
+        case "account/convertingCurrency":
+            return{
+                ...state,
+                isLoading:true,
+            };
+
+
         default:
             return state
     }
 }
 
-export function deposit(amount) {
-    return { type: "account/deposit", payload: amount}
+export function deposit(amount, currency) {
+    if (currency === "INR") return { type: "account/deposit", payload: amount }
+    console.log(amount, currency);
+    return async function (dispatch, getState) {
+        dispatch({type:"account/convertingCurrency"});
+        const res = await fetch(`https://api.frankfurter.app/latest?amount=${amount}&from=${currency}&to=INR`)
+
+        const data = await res.json()
+        console.log(data);
+        const converted = data.rates.INR
+        dispatch({ type: "account/deposit", payload: converted })
+    }
 }
 
 export function withdraw(amount) {
-    return { type: "account/withdraw", payload: amount}
+    return { type: "account/withdraw", payload: amount }
 }
 
 export function requestLoan(amount, purpose) {
     return {
         type: "account/requestLoan",
-        payload: {amount: amount, purpose: purpose}
+        payload: { amount: amount, purpose: purpose }
     }
 }
 

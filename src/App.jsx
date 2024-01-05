@@ -11,7 +11,7 @@ function App() {
   const fullName = useSelector((state) => state.customer.fullName)
   return (
     <div>
-      <h1>🏦 Welcome to Annath's Bank ⚛️</h1>
+      <h1>🏦 Welcome to NITHI Bank ⚛️</h1>
       {fullName === "" ? (
         <CreateCustomer />
       ) : (
